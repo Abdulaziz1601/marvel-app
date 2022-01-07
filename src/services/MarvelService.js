@@ -3,7 +3,7 @@ class MarvelService {
     _apiKey = 'apikey=c5a7eac44dedf91b998fe8834a0c12fc';
     // _apiKey = 'apikey=c5d6fc8b83116d92ed468ce36bac6c62';
 
-    getResource = async (url) => {
+    getResource = async (url) => {  
         let res = await fetch(url);
 
         if (!res.ok) throw new Error(`Could not fetch ${url}, status: ${res.status}`);

@@ -7,24 +7,13 @@ import CharInfo from "../charInfo/CharInfo";
 import decoration from '../../resources/img/vision.png';
 
 class App extends Component {
-    state = {
-        exist: true
-    }
-    onComponentToggle = () => {
-        this.setState((state) => {
-            return {
-                exist: !state.exist
-            }
-        })
-    }
+   
     render() {
-        const {exist} = this.state;
         return (
             <div className="app">
                 <AppHeader/>
                 <main>
-                    {exist ? <RandomChar/>  : null}
-                    <button onClick={this.onComponentToggle}> Kill Component</button>
+                    <RandomChar/>
                     <div className="char__content">
                         <CharList/>
                         <CharInfo/>

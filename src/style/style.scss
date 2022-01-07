@@ -65,6 +65,10 @@ main {
     position: relative;
 }
 
+.img_fix img {
+    object-fit: contain !important;
+}
+
 .pulse {
     animation: pulse 1.5s ease-in-out .5s infinite
 }

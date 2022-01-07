@@ -53,7 +53,6 @@ class RandomChar extends Component {
     }
 
 	updateChar = () => {
-        console.log('updCHar');
 		const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
         this.marvelService
             .getCharacter(id)
@@ -95,7 +94,7 @@ class RandomChar extends Component {
 
 const View = ({char}) => {
     const {name, description, thumbnail, homepage,  wiki} =  char;
-    const clazz = thumbnail.includes('not_available') ? ' randomchar__img--fix' : null; 
+    const clazz = thumbnail.includes('not_available') ? ' img_fix' : null; 
 
     return  (<div className="randomchar__block">
                     <img src={thumbnail} alt="Random character" className={`randomchar__img ${clazz}`}/>

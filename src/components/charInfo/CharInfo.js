@@ -1,36 +1,108 @@
-import { Component } from 'react/cjs/react.production.min';
+import { Component } from 'react';
+
+import Spinner from '../spinner/Spinner';
+import Error from '../error/Error';
+import Skeleton from '../skeleton/Skeleton';
 import MarvelService from '../../services/MarvelService';
+
 import './charInfo.scss';
 
 class CharInfo extends Component {
 
     state = {
-        selectedChar: {}
-    };
+		char: null,
+        loading: false,
+        error: false
+	}
 
-    marvelService = new MarvelService();
+	marvelService = new MarvelService();
 
-    CharUpdate = (id) => {
-        this.marvelService.getCharacter(id)
-            .then(this.onCharLoaded);
+    componentDidMount() {
+        this.updateChar();
+    }
+    componentDidUpdate(prevProps, prevState) {
+        // this.updateChar(); // when qw have new prop in our component, our component rerenders, and componentDIdUpd, is envoked
+        // However here infinite loop happens 'cause we're updating state recursively
+        // by accident when updateChar is invoked it invokes onCharLoading which means state is updated
+        // that means our component will rerender 'cause of this.setState()
+        // it leads to componendDidUpdate invoking, this means we are in a reacursive infinite loop -> ERROR
+        if(this.props.charId !== prevProps.charId ) {
+            this.updateChar();
+        }
+
+        console.log("Prevprop", prevProps, 'NewProps', this.props);
+
+    }
+    updateChar = () => {
+        const {charId} = this.props;
+        if (!charId) {
+            return;
+        }
+        this.onCharLoading();
+
+        this.marvelService
+            .getCharacter(charId)
+            .then(this.onCharLoaded)
+            .catch(this.onError);
     }
 
     onCharLoaded = (char) => {
         this.setState({
-            char
+            char,
+            loading: false
+        });
+    }
+
+    onCharLoading = () => {
+        this.setState({
+            loading: true
+        });
+    }
+
+    onError = () => {
+        this.setState({
+            error: true
         });
     }
     
     render() {
-        const {id} = this.props;
-        if(id) this.CharUpdate(id);
-     
-        const {selectedChar: {name, longDescription, thumbnail, homepage,  wiki} } = this.state;
-     
-    return (
+        const { char, loading, error} = this.state;
+        const skeleton = char || loading || error ? null : <Skeleton/>;
+        const errorMessage = error ? <Error/> : null;
+        const spinner = loading ? <Spinner/> : null;
+        const content = !(loading || error || !char) ? <View char={char} /> : null;
+        return (
             <div className="char__info">
-                <div className="char__basics">
-                    <img src={thumbnail} alt={thumbnail}/>
+                {skeleton}
+                {errorMessage}
+                {spinner}
+                {content}
+            </div>
+        )
+    }
+}
+
+const View = ({char}) => {
+    const {thumbnail, name, homepage, wiki, description, comics} = char;
+
+    const comicsItems = 
+        typeof comics !== 'string' 
+        ? comics.map(item => {
+                const comicsId = item.resourceURI.match(/comics\/(\d+)/)[1];
+                return (
+                    <li 
+                        className="char__comics-item"
+                        key={comicsId}>
+                            {item.name}
+                    </li>
+                )
+        })
+        : <li>{comics}</li>;
+
+    return (
+       <>
+            <div className="char__basics">
+                    <img src={thumbnail} alt={name}/>
                     <div>
                         <div className="char__info-name">{name}</div>
                         <div className="char__btns">
@@ -44,44 +116,14 @@ class CharInfo extends Component {
                     </div>
                 </div>
                 <div className="char__descr">
-                    {longDescription}
+                    {description}
                 </div>
                 <div className="char__comics">Comics:</div>
                 <ul className="char__comics-list">
-                    <li className="char__comics-item">
-                        All-Winners Squad: Band of Heroes (2011) #3
-                    </li>
-                    <li className="char__comics-item">
-                        Alpha Flight (1983) #50
-                    </li>
-                    <li className="char__comics-item">
-                        Amazing Spider-Man (1999) #503
-                    </li>
-                    <li className="char__comics-item">
-                        Amazing Spider-Man (1999) #504
-                    </li>
-                    <li className="char__comics-item">
-                        AMAZING SPIDER-MAN VOL. 7: BOOK OF EZEKIEL TPB (Trade Paperback)
-                    </li>
-                    <li className="char__comics-item">
-                        Amazing-Spider-Man: Worldwide Vol. 8 (Trade Paperback)
-                    </li>
-                    <li className="char__comics-item">
-                        Asgardians Of The Galaxy Vol. 2: War Of The Realms (Trade Paperback)
-                    </li>
-                    <li className="char__comics-item">
-                        Vengeance (2011) #4
-                    </li>
-                    <li className="char__comics-item">
-                        Avengers (1963) #1
-                    </li>
-                    <li className="char__comics-item">
-                        Avengers (1996) #1
-                    </li>
+                    {comicsItems}
                 </ul>
-            </div>
-        )
-    }
+       </> 
+    )
 }
 
 export default CharInfo;

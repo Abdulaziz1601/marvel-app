@@ -33,6 +33,7 @@ class CharList extends Component {
         })
     }
 
+
     // THis method is created for optimisation, bad practice to junk
     // our code with big statement
 
@@ -40,7 +41,8 @@ class CharList extends Component {
         const items = arr.map(({name, thumbnail, id}) => {
             const clazz = thumbnail.includes('not_available') ? 'img_fix' : null;
             return (
-                <li 
+            <li 
+                    onClick={() => this.props.onCharSelected(id)}
                     className="char__item"
                     key={id}>
                         <img src={thumbnail} alt={`character of ${name}`} className={clazz}/>

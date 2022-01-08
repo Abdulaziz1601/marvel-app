@@ -26,6 +26,9 @@
             height: 150px;
             object-fit: cover;
         }
+        .img_fix{
+            object-fit: contain;
+        }
     }
     &__btns {
         margin-top: 35px;
@@ -61,5 +64,4 @@
         line-height: 24px;
         text-align: center;
     }
-
 }

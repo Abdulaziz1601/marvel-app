@@ -87,7 +87,8 @@ const View = ({char}) => {
 
     const comicsItems = 
         typeof comics !== 'string' 
-        ? comics.map(item => {
+        ? comics.map((item, i) => {
+                if (i >= 10) return null;
                 const comicsId = item.resourceURI.match(/comics\/(\d+)/)[1];
                 return (
                     <li 
@@ -98,11 +99,14 @@ const View = ({char}) => {
                 )
         })
         : <li>{comics}</li>;
-
+    const clazz = thumbnail.includes('not_available') ? 'img_fix' : null;
     return (
        <>
             <div className="char__basics">
-                    <img src={thumbnail} alt={name}/>
+                    <img 
+                        src={thumbnail}
+                        alt={name}
+                        className={clazz}/>
                     <div>
                         <div className="char__info-name">{name}</div>
                         <div className="char__btns">

@@ -33,6 +33,7 @@ class CharInfo extends Component {
         console.log("Prevprop", prevProps, 'NewProps', this.props);
 
     }
+
     updateChar = () => {
         const {charId} = this.props;
         if (!charId) {
@@ -44,6 +45,7 @@ class CharInfo extends Component {
             .getCharacter(charId)
             .then(this.onCharLoaded)
             .catch(this.onError);
+        this.foo.bar = 0;
     }
 
     onCharLoaded = (char) => {

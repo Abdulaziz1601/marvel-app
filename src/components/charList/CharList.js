@@ -8,24 +8,43 @@ class CharList extends Component {
     state = {
         chars:[],
         error: false,
-        loading: true
+        loading: true,
+        newItemLoading: false,
+        offset: 1541,
+        charEnded: false
     }
 
     marvelService = new MarvelService();
 
     componentDidMount() {
-        this.foo.bar = 0;
-
-        this.marvelService.getAllCharacters()
-        .then(this.onCharsLoaded)
-        .catch(this.onError);
+        this.onRequest();
     }
 
-    onCharsLoaded = (chars) => {
+    onRequest = (offset) => {
+        this.onCharListLoading();
+        this.marvelService.getAllCharacters(offset)
+            .then(this.onCharsLoaded)
+            .catch(this.onError);
+    }
+ 
+    onCharListLoading = () => {
         this.setState({
-            chars,
-            loading: false
-        });
+            newItemLoading: true
+        })
+    }
+
+    onCharsLoaded = (newChars) => {
+        let ended = false;
+        if(newChars.length < 9) {
+            ended = true;
+        }
+        this.setState(({chars, offset}) => ({
+            chars: [...chars, ...newChars],
+            loading: false,
+            newItemLoading: false, 
+            offset: offset + 9,
+            charEnded: ended
+        }));
     }
 
     onError = () => {
@@ -60,21 +79,46 @@ class CharList extends Component {
         );
     }
 
+    // onNewCharsLoaded = () => {
+    //     this.setState((state) => {
+    //         return {
+    //             limit: state.limit*2,
+    //             loading: true
+    //         }
+    //     })
+    // }
+
+    // componentDidUpdate(_, prevState) {
+    //     if(this.state.limit !== prevState.limit) {
+    //         this.marvelService.getAllCharacters(this.state.limit)
+    //         .then(this.onCharsLoaded)
+    //         .catch(this.onError);
+    //     }
+    // }
+
+    
+
     render() {
-        const {chars, error, loading} = this.state;
+        const {chars, error, loading, newItemLoading, offset, charEnded} = this.state;
 
         let items = this.renderItems(chars);
 
         const errorMessage = error ? <Error/> : null;
         const spinner = loading ? <Spinner/> : null;
         const content = !(error || loading) ? items : null;
+        // const newContentSpinner = newItemLoading ? "Loading..." : null;
         return (
             <div className="char__list">
                 {errorMessage}
                 {spinner}
                 {content}
-                <button className="button button__main button__long">
-                    <div className="inner">load more</div>
+                {/* {newContentSpinner} */}
+                <button 
+                    className="button button__main button__long"
+                    disabled={newItemLoading}
+                    onClick={() => this.onRequest(offset)}
+                    style={{'display': charEnded ? "none": 'block'}}>
+                        <div className="inner">load more</div>
                 </button>
             </div>
         )

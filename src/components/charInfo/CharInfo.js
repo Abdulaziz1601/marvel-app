@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import Spinner from '../spinner/Spinner';
 import Error from '../error/Error';
@@ -131,5 +132,13 @@ const View = ({char}) => {
        </> 
     )
 }
+
+CharInfo.propTypes = {
+    charId: PropTypes.number 
+    
+}
+// HW to check Charlist props
+// 1. It has to exist 
+// 2. It has to be function
 
 export default CharInfo;

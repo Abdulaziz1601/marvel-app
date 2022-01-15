@@ -12,7 +12,7 @@ class CharList extends Component {
         error: false,
         loading: true,
         newItemLoading: false,
-        offset: 1541,
+        offset: 210,
         charEnded: false
     }
 
@@ -127,7 +127,6 @@ class CharList extends Component {
     }
 }
 CharList.propTypes = {
-    onCharSelected: PropTypes.func,
     onCharSelected: PropTypes.func.isRequired,
 
 }

@@ -7,16 +7,6 @@ import Spinner from '../spinner/Spinner';
 import './charList.scss';
 
 const CharList = (props) => {
-
-    // state = {
-    //     chars:[],
-    //     error: false,
-    //     loading: true,
-    //     newItemLoading: false,
-    //     offset: 210,
-    //     charEnded: false
-    // }
-
     const [chars, setChars] = useState([]);
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -26,9 +16,6 @@ const CharList = (props) => {
 
     const marvelService = new MarvelService();
 
-    // componentDidMount() {
-    //     this.onRequest();
-    // }
     useEffect(() => {
         onRequest();
     }, []);
@@ -54,13 +41,6 @@ const CharList = (props) => {
         setNewItemLoading(false);
         setOffset(offset => offset+9);
         setCharEnded(ended);
-        // this.setState(({chars, offset}) => ({
-        //     chars: [...chars, ...newChars],
-        //     loading: false,
-        //     newItemLoading: false, 
-        //     offset: offset + 9,
-        //     charEnded: ended
-        // }));
     }
 
     const onError = () => {
@@ -68,31 +48,36 @@ const CharList = (props) => {
         setLoading(false)
     }
 
-    const handleSelect = (e, id) => {
-        props.onCharSelected(id);
-        document.querySelectorAll('.char__item').forEach(item => {
-            if (item.classList.contains('char__item_selected')) {
-                item.classList.remove('char__item_selected');
-            }
-        });
-        
-        if (e.target.parentElement.classList.contains('char__item') && !e.target.parentElement.classList.contains('char__item_selected') ) {
-            e.target.parentElement.classList.add('char__item_selected');
-        }
+    const itemRefs = useRef([]);
+
+    const focusOnItem = (id) => {
+        itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
+        itemRefs.current[id].classList.add('char__item_selected');
+        itemRefs.current[id].focus();
     }
 
     // THis method is created for optimisation, bad practice to junk
     // our code with big statement
 
-    const renderItems = (arr) => {
+    function renderItems (arr) {
         const items = arr.map(({name, thumbnail, id}, index) => {
             const clazz = thumbnail.includes('not_available') ? 'img_fix' : null;
             return (
                 <li 
                     className="char__item"
                     key={id}
-                    onClick={(e) => handleSelect(e, id)}
-                    tabindex={index}>
+                    tabIndex={0}
+                    ref={el => itemRefs.current[index] = el}
+                    onClick={() => {
+                        props.onCharSelected(id);
+                        focusOnItem(index)
+                    }}
+                    onKeyPress={(e) => {
+                        if(e.key === 'Enter' || e.key === ' ') {
+                            props.onCharSelected(id);
+                            focusOnItem(index)
+                        }
+                    }}>
                         <img src={thumbnail} alt={`character of ${name}`} className={clazz}/>
                         <div className="char__name">{name}</div>
                 </li>
@@ -106,34 +91,17 @@ const CharList = (props) => {
         );
     }
 
-    // onNewCharsLoaded = () => {
-    //     this.setState((state) => {
-    //         return {
-    //             limit: state.limit*2,
-    //             loading: true
-    //         }
-    //     })
-    // }
-
-    // componentDidUpdate(_, prevState) {
-    //     if(this.state.limit !== prevState.limit) {
-    //         this.marvelService.getAllCharacters(this.state.limit)
-    //         .then(this.onCharsLoaded)
-    //         .catch(this.onError);
-    //     }
-    // }
-    let items = renderItems(chars);
+    const items = renderItems(chars);
 
     const errorMessage = error ? <Error/> : null;
     const spinner = loading ? <Spinner/> : null;
     const content = !(error || loading) ? items : null;
-    // const newContentSpinner = newItemLoading ? "Loading..." : null;
+    
     return (
         <div className="char__list">
             {errorMessage}
             {spinner}
             {content}
-            {/* {newContentSpinner} */}
             <button 
                 className="button button__main button__long"
                 disabled={newItemLoading}

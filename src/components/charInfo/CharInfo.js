@@ -31,7 +31,7 @@ class CharInfo extends Component {
             this.updateChar();
         }
 
-        console.log("Prevprop", prevProps, 'NewProps', this.props);
+        // console.log("Prevprop", prevProps, 'NewProps', this.props);
 
     }
 

@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import Spinner from '../spinner/Spinner';
@@ -8,81 +8,71 @@ import MarvelService from '../../services/MarvelService';
 
 import './charInfo.scss';
 
-class CharInfo extends Component {
+const CharInfo = ({charId}) => {
+    const [char, setChar] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    
+	const marvelService = new MarvelService();
 
-    state = {
-		char: null,
-        loading: false,
-        error: false
-	}
+    useEffect(() => {
+        updateChar();
+    }, []);
 
-	marvelService = new MarvelService();
+    useEffect(() => {
+        console.log(charId);
+        updateChar();
+    }, [charId]); // when charId will change our useEffect will be envoked 
 
-    componentDidMount() {
-        this.updateChar();
-    }
-    componentDidUpdate(prevProps, prevState) {
-        // this.updateChar(); // when qw have new prop in our component, our component rerenders, and componentDIdUpd, is envoked
-        // However here infinite loop happens 'cause we're updating state recursively
-        // by accident when updateChar is invoked it invokes onCharLoading which means state is updated
-        // that means our component will rerender 'cause of this.setState()
-        // it leads to componendDidUpdate invoking, this means we are in a reacursive infinite loop -> ERROR
-        if(this.props.charId !== prevProps.charId ) {
-            this.updateChar();
-        }
+    // componentDidUpdate(prevProps, prevState) {
+    //     // updateChar(); // when we have new prop in our component, our component rerenders, and componentDIdUpd, is envoked
+    //     // However here infinite loop happens 'cause we're updating state recursively
+    //     // by accident when updateChar is invoked it invokes onCharLoading which means state is updated
+    //     // that means our component will rerender 'cause of setState()
+    //     // it leads to componendDidUpdate invoking, this means we are in a reacursive infinite loop -> ERROR
+    //     if(props.charId !== prevProps.charId ) {
+    //         updateChar();
+    //     }
 
-        // console.log("Prevprop", prevProps, 'NewProps', this.props);
+    //     // console.log("Prevprop", prevProps, 'NewProps', props);
 
-    }
+    // }
 
-    updateChar = () => {
-        const {charId} = this.props;
+    const updateChar = () => {
         if (!charId) {
             return;
         }
-        this.onCharLoading();
 
-        this.marvelService
+        setLoading(true);
+
+        marvelService
             .getCharacter(charId)
-            .then(this.onCharLoaded)
-            .catch(this.onError);
+            .then(onCharLoaded)
+            .catch(onError);
         
     }
 
-    onCharLoaded = (char) => {
-        this.setState({
-            char,
-            loading: false
-        });
+    const onCharLoaded = (char) => {
+        setChar(char);
+        setLoading(false)
     }
 
-    onCharLoading = () => {
-        this.setState({
-            loading: true
-        });
-    }
-
-    onError = () => {
-        this.setState({
-            error: true
-        });
+    const onError = () => {
+        setError(true);
     }
     
-    render() {
-        const { char, loading, error} = this.state;
-        const skeleton = char || loading || error ? null : <Skeleton/>;
-        const errorMessage = error ? <Error/> : null;
-        const spinner = loading ? <Spinner/> : null;
-        const content = !(loading || error || !char) ? <View char={char} /> : null;
-        return (
-            <div className="char__info">
-                {skeleton}
-                {errorMessage}
-                {spinner}
-                {content}
-            </div>
-        )
-    }
+    const skeleton = char || loading || error ? null : <Skeleton/>;
+    const errorMessage = error ? <Error/> : null;
+    const spinner = loading ? <Spinner/> : null;
+    const content = !(loading || error || !char) ? <View char={char} /> : null;
+    return (
+        <div className="char__info">
+            {skeleton}
+            {errorMessage}
+            {spinner}
+            {content}
+        </div>
+    );
 }
 
 const View = ({char}) => {
@@ -102,7 +92,9 @@ const View = ({char}) => {
                 )
         })
         : <li>{comics}</li>;
+        
     const clazz = thumbnail.includes('not_available') ? 'img_fix' : null;
+    
     return (
        <>
             <div className="char__basics">
@@ -137,8 +129,5 @@ CharInfo.propTypes = {
     charId: PropTypes.number 
     
 }
-// HW to check Charlist props
-// 1. It has to exist 
-// 2. It has to be function
 
 export default CharInfo;

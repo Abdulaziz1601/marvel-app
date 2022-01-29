@@ -91,4 +91,7 @@
     &:disabled {
         filter: grayscale(50%);
     }
+    &:active {
+        transform: translateY(2px);
+    }
 }

@@ -4,8 +4,8 @@ const useMarvelService = () => {
     const {loading, request, error, clearError} = useHttp();
 
     const _apiBase = 'https://gateway.marvel.com:443/v1/public';
-    const _apiKey = 'apikey=c5a7eac44dedf91b998fe8834a0c12fc';
-    // _apiKey = 'apikey=c5d6fc8b83116d92ed468ce36bac6c62';
+    // const _apiKey = 'apikey=c5a7eac44dedf91b998fe8834a0c12fc';
+    const _apiKey = 'apikey=c5d6fc8b83116d92ed468ce36bac6c62';
     const _baseOffset = 210; 
 
     const getAllCharacters = async (offset = _baseOffset) => {
@@ -18,6 +18,11 @@ const useMarvelService = () => {
         return _transformCharacter(res.data.results[0]);
     }
 
+    const getAllComics = async (offset=_baseOffset) => {
+        const res = await request(`${_apiBase}/comics?limit=8&offset=${offset}&${_apiKey}`);
+        return res.data.results.map(_transformComics);
+    }
+
     const _transformCharacter = (char) => {
         return {
             id: char.id,
@@ -28,9 +33,18 @@ const useMarvelService = () => {
             wiki: char.urls[1].url,
             comics: char.comics.items.length ? char.comics.items : 'Sorry, no comics available 😭'
         };  
-    } 
+    };
+    const _transformComics = (comics) => {
+        return {
+            id: comics.id,
+            title: comics.title,
+            description: comics.description ? `${comics.description.slice(0, 210)}... ` : 'Sorry, no description available 😬' ,
+            thumbnail: comics.thumbnail.path + '.' + comics.thumbnail.extension,
+            price: comics.prices[0].price,
+        }
+    }
 
-    return {loading, error, getAllCharacters, getCharacter, clearError};
+    return {loading, error, getAllCharacters, getCharacter, clearError, getAllComics};
 }
 
 // const marvelService = new MarvelService();

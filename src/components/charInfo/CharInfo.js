@@ -4,61 +4,34 @@ import PropTypes from 'prop-types';
 import Spinner from '../spinner/Spinner';
 import Error from '../error/Error';
 import Skeleton from '../skeleton/Skeleton';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 
 import './charInfo.scss';
 
 const CharInfo = ({charId}) => {
-    const [char, setChar] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
-    
-	const marvelService = new MarvelService();
 
-    useEffect(() => {
-        updateChar();
-    }, []);
+    const [char, setChar] = useState(null);
+    
+	const {loading, error, getCharacter, clearError} = useMarvelService();
 
     useEffect(() => {
         console.log(charId);
         updateChar();
     }, [charId]); // when charId will change our useEffect will be envoked 
 
-    // componentDidUpdate(prevProps, prevState) {
-    //     // updateChar(); // when we have new prop in our component, our component rerenders, and componentDIdUpd, is envoked
-    //     // However here infinite loop happens 'cause we're updating state recursively
-    //     // by accident when updateChar is invoked it invokes onCharLoading which means state is updated
-    //     // that means our component will rerender 'cause of setState()
-    //     // it leads to componendDidUpdate invoking, this means we are in a reacursive infinite loop -> ERROR
-    //     if(props.charId !== prevProps.charId ) {
-    //         updateChar();
-    //     }
-
-    //     // console.log("Prevprop", prevProps, 'NewProps', props);
-
-    // }
-
     const updateChar = () => {
         if (!charId) {
             return;
         }
 
-        setLoading(true);
+        clearError();   
 
-        marvelService
-            .getCharacter(charId)
-            .then(onCharLoaded)
-            .catch(onError);
-        
+        getCharacter(charId)
+            .then(onCharLoaded);
     }
 
     const onCharLoaded = (char) => {
         setChar(char);
-        setLoading(false)
-    }
-
-    const onError = () => {
-        setError(true);
     }
     
     const skeleton = char || loading || error ? null : <Skeleton/>;

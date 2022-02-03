@@ -84,14 +84,6 @@ const CharList = (props) => {
 
     const errorMessage = error ? <Error/> : null;
     const spinner = loading && !newItemLoading ? <Spinner/> : null;
-
-    if (loading) {
-        import('./someFunc') // dynamic import returs Promise, with object of Module
-            .then(obj => obj.default())
-            .catch()
-
-    }
-    
     return (
         <div className="char__list">
             {errorMessage}

@@ -26,6 +26,7 @@ const CharList = (props) => {
     }
 
     const onCharsLoaded = (newChars) => {
+        
         let ended = false;
         if(newChars.length < 9) {
             ended = true;
@@ -83,6 +84,13 @@ const CharList = (props) => {
 
     const errorMessage = error ? <Error/> : null;
     const spinner = loading && !newItemLoading ? <Spinner/> : null;
+
+    if (loading) {
+        import('./someFunc') // dynamic import returs Promise, with object of Module
+            .then(obj => obj.default())
+            .catch()
+
+    }
     
     return (
         <div className="char__list">

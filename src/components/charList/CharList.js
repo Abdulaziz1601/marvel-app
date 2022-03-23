@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
+
 import useMarvelService from '../../services/MarvelService';
 import Error from '../error/Error'
 import Spinner from '../spinner/Spinner';
@@ -7,8 +9,8 @@ import Spinner from '../spinner/Spinner';
 import './charList.scss';
 
 const CharList = (props) => {
-    const [charList, setCharList] = useState([]);
 
+    const [charList, setCharList] = useState([]);
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false); 
@@ -26,7 +28,6 @@ const CharList = (props) => {
     }
 
     const onCharsLoaded = (newChars) => {
-        
         let ended = false;
         if(newChars.length < 9) {
             ended = true;
@@ -47,36 +48,41 @@ const CharList = (props) => {
 
     // THis method is created for optimisation, bad practice to junk
     // our code with big statement
-
     function renderItems (arr) {
+
         const items = arr.map(({name, thumbnail, id}, index) => {
             const clazz = thumbnail.includes('not_available') ? 'img_fix' : null;
             return (
-                <li 
-                    className="char__item"
-                    key={id}
-                    tabIndex={0}
-                    ref={el => itemRefs.current[index] = el}
-                    onClick={() => {
-                        props.onCharSelected(id);
-                        focusOnItem(index)
-                    }}
-                    onKeyPress={(e) => {
-                        if(e.key === 'Enter' || e.key === ' ') {
+                <CSSTransition key={id} timeout={500}  classNames="char__item">
+                    <li 
+                        className="char__item"
+                        tabIndex={0}
+                        ref={el => itemRefs.current[index] = el}
+                        onClick={() => {
                             props.onCharSelected(id);
                             focusOnItem(index)
-                        }
-                    }}>
-                        <img src={thumbnail} alt={`character of ${name}`} className={clazz}/>
-                        <div className="char__name">{name}</div>
-                </li>
+                        }}
+                        onKeyPress={(e) => {
+                            if(e.key === 'Enter' || e.key === ' ') {
+                                props.onCharSelected(id);
+                                focusOnItem(index)
+                            }
+                        }}>
+                            <img src={thumbnail} alt={`character of ${name}`} className={clazz}/>
+                            <div className="char__name">{name}</div>
+                    </li>
+                </CSSTransition>
+                
             )
         });
         // THis construction to center our spinner and errorMEssage
         return (
             <ul className="char__grid">
-                {items}
+                <TransitionGroup component={null}>
+                    {items}
+                </TransitionGroup>
             </ul>
+            
         );
     }
 

@@ -1,0 +1,28 @@
+.single-char {
+    margin-top: 50px;
+    display: grid;
+    grid-template-columns: 293px 550px auto;
+    column-gap: 50px;
+    align-items: start;
+    &__img {
+        display: inline-block;
+        img {
+            height: 293px;
+            width: 293px;
+        }
+    }
+    &__name {
+        font-weight: 700;
+        font-size: 22px;
+        line-height: 26px;
+        text-transform: uppercase;
+    }
+
+    &__descr {
+        margin-top: 25px;
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 21px;
+    }
+
+}

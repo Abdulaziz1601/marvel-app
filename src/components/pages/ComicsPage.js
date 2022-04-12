@@ -9,7 +9,7 @@ const ComicsPage = () => (
                 name="description"
                 content="Page with list of our comics"
             />
-            <title>Comics Page</title>
+            <title>Comics Page</title>  
         </Helmet>
         <AppBanner />
         <ComicsList />

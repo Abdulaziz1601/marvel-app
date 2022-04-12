@@ -7,6 +7,7 @@ import Skeleton from '../skeleton/Skeleton';
 import useMarvelService from '../../services/MarvelService';
 
 import './charInfo.scss';
+import { Link } from 'react-router-dom';
 
 const CharInfo = ({charId}) => {
 
@@ -60,7 +61,7 @@ const View = ({char}) => {
                     <li 
                         className="char__comics-item"
                         key={comicsId}>
-                            {item.name}
+                            <Link to={`comics/${comicsId}`}>{item.name}</Link>
                     </li>
                 )
         })

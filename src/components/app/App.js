@@ -2,14 +2,15 @@ import {lazy, Suspense} from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import AppHeader from "../appHeader/AppHeader";
+import SinglePage from '../pages/SinglePage';
 import Spinner from '../spinner/Spinner';
 
 // !Dynamic imports has to be place after static imports 
 const Page404 = lazy(() => import('../pages/404'));
 const MainPage = lazy(() => import('../pages/MainPage'));
 const ComicsPage = lazy(() => import('../pages/ComicsPage'));
-const SingleComicPage = lazy(() => import('../pages/SingleComicPage'));
-const SingleCharPage = lazy(() => import('../pages/SingleCharPage'));
+const SingleComicLayout = lazy(() => import('../pages/singleComicLayout/SingleComicLayout'));
+const SingleCharacterLayout = lazy(() => import('../pages/singleCharacterLayout/SingleCharacterLayout'));
 
 // 751
 
@@ -29,11 +30,11 @@ const App = () => {
                             <Route exact path="/comics">
                                 <ComicsPage />
                             </Route>
-                            <Route exact path="/comics/:comicId">
-                                <SingleComicPage />
+                            <Route exact path="/comics/:id">
+                                <SinglePage Component={SingleComicLayout} dataType={'comic'} />
                             </Route>
-                            <Route exact path="/characters/:charId">
-                                <SingleCharPage />
+                            <Route exact path="/characters/:id">
+                                <SinglePage Component={SingleCharacterLayout} dataType={'character'} />
                             </Route>
                             <Route path={'*'}>
                                 <Page404 />
